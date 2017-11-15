@@ -1,1 +1,3 @@
 # blogx
+
+django learning material 
