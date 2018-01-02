@@ -1,0 +1,17 @@
+<!--DOCTYPE HTML -->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<h1> Form</h1>
+
+	<form method="POST">
+		{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" name="" value="Create a blog post">
+	</form>
+</body>
+</html>

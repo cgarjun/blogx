@@ -1,0 +1,29 @@
+<!--DOCTYPE HTML -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+	{% for obj in object_list %}
+		<!-- <div class="col-sm-6">
+			</a><br>
+			<br>
+		</div> -->
+		
+			<div class="col-sm-6">
+				<div class="thumbnail">
+					<!-- <img src="" alt=""> -->
+					<div class="caption">
+						<h3><a href="{{ obj.get_absolute_url }}">{{obj.title}}</a> </h3> <small>{{ obj.created_at }}</small>
+						<p>{{obj.content | linebreaks | truncatewords:50}}</p>
+						<p>
+							<a href="#" class="btn btn-primary" role="button">Button</a>
+						</p>
+					</div>					
+				</div>
+			</div>
+		{% cycle "" "</div><div class='row'>" %}
+	{% endfor %}
+</div>
+
+{% endblock content %}
