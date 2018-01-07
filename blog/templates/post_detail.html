@@ -7,8 +7,21 @@
 	<div class="col-sm-12 col-sm-offset-4">
 
 	<hr>
-	<h3>{{instance.title}}</h3> <small>{{instance.created_at}}</small><br>
-	{{instance.content | linebreaks }}<br>
+	<h1>{{instance.title}}</h1> <small>{{instance.created_at}}</small><br>
+	{% if instance.user.get_full_name %}
+		<p>Author: {{ instance.user.get_full_name }}</p>
+	{% endif %}
+	{% if instance.cover_image %}
+		<img src="{{ instance.cover_image.url }}" class="img-fluid"><br>
+	{% endif %}
+	<a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">Facebook</a>
+	<a href="https://twitter.com/home?status={{ share_string }}%20{{ request.build_absolute_uri }}">Twitter</a>
+	<a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ instance.title }}&summary={{ share_string }}&source={{ request.build_absolute_uri }}">Linkedin</a>
+	<a href="http://www.reddit.com/submit?url={{ request.build_absolute_uri }}&title={{ share_string }}.">Reddit</a>
+
+	<p>
+	{{instance.content | linebreaks }}
+	</p>
 	<hr>
 	</div>
 {% endblock content %}

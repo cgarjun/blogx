@@ -21,7 +21,7 @@ from blog import views
 urlpatterns = [
     url(r'^$', views.post_list, name="list"),
     url(r'^create/$', views.post_create, name="post"),
-    url(r'^(?P<idx>\d+)/update/$', views.post_update, name="update"),
-    url(r'^(?P<idx>\d+)/$', views.post_detail, name="post_detail"),
-    url(r'^(?P<idx>\d+)/delete/$', views.post_delete, name="delete"),
+    url(r'^(?P<slug>[\w-]+)/update/$', views.post_update, name="update"),
+    url(r'^(?P<slug>[\w-]+)/$', views.post_detail, name="post_detail"),
+    url(r'^(?P<slug>[\w-]+)/delete/$', views.post_delete, name="delete"),
 ]

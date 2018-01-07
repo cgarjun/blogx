@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from urllib import quote_plus
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from blog.models import Post
 from blog.form import PostForm
@@ -10,27 +11,37 @@ from blog.form import PostForm
 
 
 def post_create(request):
-    form = PostForm(request.POST)
+    if not request.user.is_staff or not request.user.superuser:
+        raise Http404
+
+    if not request.user.is_authenticated():
+        raise Http404
+        
+    form = PostForm(request.POST or None, request.FILES or None)
     context = {'form': form}
     if form.is_valid():
         instance = form.save(commit=False)
+        instance.user = request.user
         instance.save()
         messages.success(request, "Successfully created post")
         return HttpResponseRedirect(instance.get_absolute_url())
     return render(request, "post_form.html", context)
 
-def post_detail(request, idx=None):
-    instance = get_object_or_404(Post, id=idx)
+def post_detail(request, slug=None):
+    instance = get_object_or_404(Post, slug=slug)
+    share_string = quote_plus(instance.content)
     context = {
         "title": "details",
-        "instance":instance
+        "instance":instance,
+        "share_string":share_string
     }
     return render(request, "post_detail.html", context)
 
 def post_list(request):
     queryset_all = Post.objects.all()
     paginator = Paginator(queryset_all, 3)
-    page = request.GET.get('page')
+    page_request_var = 'page'
+    page = request.GET.get(page_request_var)
     try:
         queryset = paginator.page(page)
     except PageNotAnInteger:
@@ -42,14 +53,15 @@ def post_list(request):
 
     context = {
     "object_list":queryset,
-        "title": "details"
+        "title": "details",
+        "page_request_var":page_request_var
     }
     return render(request, "index.html", context)
 
-def post_update(request, idx=None):
-    instance = get_object_or_404(Post, id=idx)
+def post_update(request, slug=None):
+    instance = get_object_or_404(Post, slug=slug)
 
-    form = PostForm(request.POST or None, instance=instance)
+    form = PostForm(request.POST or None, request.FILES or None, instance=instance)
     context = {'form': form}
     if form.is_valid():
         instance = form.save(commit=False)
@@ -63,7 +75,7 @@ def post_update(request, idx=None):
     }
     return render(request, "post_form.html", context)
 
-def post_delete(request, idx):
-    instance = get_object_or_404(Post, id=idx)
+def post_delete(request, slug):
+    instance = get_object_or_404(Post, slug=slug)
     instance.delete()
     return redirect("blog:list")
